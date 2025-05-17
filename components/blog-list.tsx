@@ -46,6 +46,7 @@ export function BlogList() {
   }, [pathname, searchParams])
 
   const handleDelete = async (id: string) => {
+    console.log('Attempting to delete blog with ID:', id); // Add this line
     if (confirm("Are you sure you want to delete this blog?")) {
       try {
         await deleteBlog(id)
@@ -206,7 +207,7 @@ function BlogCard({ blog, onDelete }: { blog: Blog; onDelete: (id: string) => vo
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onDelete(blog.id)}
+          onClick={() => onDelete(blog._id)}
           className="transition-all duration-300 hover:bg-red-500 hover:text-white"
         >
           <Trash className="h-4 w-4 mr-1" />
