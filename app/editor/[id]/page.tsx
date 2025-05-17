@@ -8,12 +8,13 @@ export default async function EditorPage({
   params: { id: string }
 }) {
   // If it's a new blog, render empty editor
-  if (params.id === "new") {
+  const id = params.id
+  if (id === "new") {
     return <BlogEditor />
   }
 
   // Otherwise, fetch the blog and render editor with data
-  const blog = await getBlogById(params.id)
+  const blog = await getBlogById(id)
 
   if (!blog) {
     notFound()

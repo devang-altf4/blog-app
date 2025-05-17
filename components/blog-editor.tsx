@@ -100,7 +100,7 @@ export function BlogEditor({ blog }: { blog?: Blog }) {
     setSaving(true)
     try {
       const savedBlog = await saveDraft({
-        id: blog?.id,
+        id: blog?._id,
         title,
         content,
         tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],

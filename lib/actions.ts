@@ -35,47 +35,51 @@ export async function getBlogById(id: string) {
   }
 }
 
-// Save a blog (create or update)
-export async function saveBlog(blogData: Blog) {
+// Save a blog draft (create or update)
+export async function saveDraft(blogData: {
+  id?: string
+  title: string
+  content: string
+  tags: string[]
+}): Promise<Blog> {
   try {
     const { db } = await connectToDatabase()
     const now = new Date()
+    
+    const blog = {
+      title: blogData.title,
+      content: blogData.content,
+      tags: blogData.tags,
+      status: "draft",
+      updated_at: now,
+      published: false
+    }
 
-    if (blogData._id) {
+    let result
+    
+    if (blogData.id) {
       // Update existing blog
-      const result = await db.collection("blogs").updateOne(
-        { _id: new ObjectId(blogData._id) },
-        {
-          $set: {
-            title: blogData.title,
-            content: blogData.content,
-            tags: blogData.tags,
-            status: blogData.status,
-            updated_at: now,
-          },
-        },
+      result = await db.collection("blogs").findOneAndUpdate(
+        { _id: new ObjectId(blogData.id) },
+        { $set: blog },
+        { returnDocument: "after" }
       )
-
-      revalidatePath("/")
-      revalidatePath(`/editor/${blogData._id}`)
-      return { success: true, id: blogData._id }
+      blog._id = blogData.id
     } else {
-      // Create new blog
-      const result = await db.collection("blogs").insertOne({
-        title: blogData.title,
-        content: blogData.content,
-        tags: blogData.tags,
-        status: "draft",
-        created_at: now,
-        updated_at: now,
-      })
+      // Insert new blog
+      blog.created_at = now
+      result = await db.collection("blogs").insertOne(blog)
+      blog._id = result.insertedId.toString()
+    }
 
-      revalidatePath("/")
-      return { success: true, id: result.insertedId }
+    revalidatePath("/")
+    return {
+      _id: blog._id,
+      ...blog
     }
   } catch (error) {
-    console.error("Failed to save blog:", error)
-    return { success: false, error: "Failed to save blog" }
+    console.error("Failed to save draft:", error)
+    throw new Error("Failed to save draft")
   }
 }
 
