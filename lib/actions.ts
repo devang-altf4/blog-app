@@ -6,10 +6,11 @@ import { revalidatePath } from "next/cache"
 import { ObjectId } from "mongodb"
 
 // Get all blogs
-export async function getAllBlogs() {
+export async function getAllBlogs(status?: "published" | "draft") {
   try {
     const { db } = await connectToDatabase()
-    const blogs = await db.collection("blogs").find({}).sort({ updated_at: -1 }).toArray()
+    const query = status ? { status } : {}
+    const blogs = await db.collection("blogs").find(query).sort({ updated_at: -1 }).toArray()
 
     console.log("[getAllBlogs] Fetched data from DB:", blogs);
 

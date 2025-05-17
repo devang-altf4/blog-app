@@ -28,7 +28,7 @@ export function BlogList() {
       console.log(`[BlogList] useEffect triggered. Pathname: ${pathname}, SearchParams: ${searchParams.toString()}`);
       setLoading(true);
       try {
-        const data = await getAllBlogs()
+        const data = await getAllBlogs(searchParams.get('status') as "published" | "draft" | undefined)
         setBlogs(data)
         console.log("[BlogList] Fetched blogs. Count:", data.length, "Titles:", data.map(b => b.title));
       } catch (error) {
@@ -75,8 +75,8 @@ export function BlogList() {
     }
   }
 
-  const publishedBlogs = blogs.filter((blog) => blog.published)
-  const draftBlogs = blogs.filter((blog) => !blog.published)
+  const publishedBlogs = blogs.filter((blog) => blog.status === "published")
+  const draftBlogs = blogs.filter((blog) => blog.status === "draft")
 
   if (loading) {
     return (
@@ -223,7 +223,7 @@ function BlogCard({ blog, onDelete }: { blog: Blog; onDelete: (id: string) => vo
           <Trash className="h-4 w-4 mr-1" />
           Delete
         </Button>
-        <Link href={`/editor/${blog.id}`}>
+        <Link href={`/editor/${blog._id}`}>
           <Button
             variant="outline"
             size="sm"
@@ -233,7 +233,7 @@ function BlogCard({ blog, onDelete }: { blog: Blog; onDelete: (id: string) => vo
             Edit
           </Button>
         </Link>
-        <Link href={`/blog/${blog.id}`}>
+        <Link href={`/blog/${blog._id}`}>
           <Button
             size="sm"
             className="bg-black-800 hover:bg-black-700 text-white transition-all duration-300 hover:scale-105"
