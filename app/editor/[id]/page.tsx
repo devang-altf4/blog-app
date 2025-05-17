@@ -8,7 +8,7 @@ export default async function EditorPage({
   params: { id: string }
 }) {
   // If it's a new blog, render empty editor
-  const id = params.id
+  const { id } = await params;
   if (id === "new") {
     return <BlogEditor />
   }

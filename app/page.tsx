@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { BlogList } from "@/components/blog-list"
 import { Plus } from "lucide-react"
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: "Blog Platform",
@@ -25,7 +26,9 @@ export default function Home() {
             </Button>
           </Link>
         </div>
-        <BlogList />
+        <Suspense fallback={<div>Loading blogs...</div>}>
+          <BlogList />
+        </Suspense>
       </div>
     </main>
   )
