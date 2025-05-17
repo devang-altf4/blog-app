@@ -46,21 +46,31 @@ export function BlogList() {
   }, [pathname, searchParams])
 
   const handleDelete = async (id: string) => {
-    console.log('Attempting to delete blog with ID:', id); // Add this line
+    console.log('Attempting to delete blog with ID:', id);
     if (confirm("Are you sure you want to delete this blog?")) {
       try {
-        await deleteBlog(id)
-        setBlogs(blogs.filter((blog) => blog.id !== id))
+        // Optimistically update UI before deletion completes
+        setBlogs(prevBlogs => {
+          const filtered = prevBlogs.filter((blog) => blog._id !== id);
+          console.log('[BlogList] After deletion, blogs count:', filtered.length);
+          return filtered;
+        });
+        await deleteBlog(id);
         toast({
           title: "Blog deleted",
           description: "Your blog has been deleted successfully",
-        })
+        });
       } catch (error) {
+        // Revert UI if deletion fails
+        const blogToRestore = blogs.find(blog => blog.id === id);
+        if (blogToRestore) {
+          setBlogs(prevBlogs => [...prevBlogs, blogToRestore]);
+        }
         toast({
           title: "Error deleting blog",
           description: "There was an error deleting your blog",
           variant: "destructive",
-        })
+        });
       }
     }
   }
