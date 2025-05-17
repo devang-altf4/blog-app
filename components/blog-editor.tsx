@@ -152,7 +152,7 @@ export function BlogEditor({ blog }: { blog?: Blog }) {
     setPublishing(true)
     try {
       const publishedBlog = await publishBlog({
-        id: blog?._id,
+        id: blog?.id,
         title,
         content,
         tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],

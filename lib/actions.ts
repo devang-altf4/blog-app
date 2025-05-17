@@ -37,12 +37,7 @@ export async function getBlogById(id: string) {
 }
 
 // Save a blog draft (create or update)
-export async function saveDraft(blogData: {
-  id?: string
-  title: string
-  content: string
-  tags: string[]
-}): Promise<Blog> {
+export async function saveDraft(blogData: BlogInput): Promise<Blog> {
   try {
     const { db } = await connectToDatabase()
     const now = new Date()
@@ -85,7 +80,7 @@ export async function saveDraft(blogData: {
 }
 
 // Publish a blog
-export async function publishBlog(blogData: Blog) {
+export async function publishBlog(blogData: BlogInput) {
   try {
     const { db } = await connectToDatabase()
     const now = new Date()
