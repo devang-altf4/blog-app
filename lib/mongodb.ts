@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb"
+import { MongoClient, Db } from "mongodb"
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please add your MongoDB URI to .env.local")
@@ -26,7 +26,7 @@ const MONGODB_DB = getDatabaseName(MONGODB_URI)
 
 // Connection cache
 let cachedClient: MongoClient | null = null
-let cachedDb: any = null
+let cachedDb: Db | null = null
 
 export async function connectToDatabase() {
   // If we have a cached connection, use it
@@ -48,15 +48,14 @@ export async function connectToDatabase() {
     await db.command({ ping: 1 })
     console.log("Successfully connected to MongoDB.")
     
+      // Cache the connection
+    cachedClient = client
+    cachedDb = db
+
     return { client, db }
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error)
     throw error
   }
 
-  // Cache the connection
-  cachedClient = client
-  cachedDb = db
-
-  return { client, db }
 }
