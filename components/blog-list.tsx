@@ -1,7 +1,5 @@
 "use client"
 
-"use client"
-
 import { useState, useEffect } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -45,8 +43,12 @@ export function BlogList() {
     fetchBlogs()
   }, [pathname, searchParams])
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | undefined) => {
     console.log('Attempting to delete blog with ID:', id);
+    if (!id) {
+      console.error('Cannot delete blog with undefined ID.');
+      return;
+    }
     if (confirm("Are you sure you want to delete this blog?")) {
       try {
         // Optimistically update UI before deletion completes
@@ -62,7 +64,7 @@ export function BlogList() {
         });
       } catch (error) {
         // Revert UI if deletion fails
-        const blogToRestore = blogs.find(blog => blog.id === id);
+        const blogToRestore = blogs.find(blog => blog._id === id);
         if (blogToRestore) {
           setBlogs(prevBlogs => [...prevBlogs, blogToRestore]);
         }
@@ -141,7 +143,7 @@ export function BlogList() {
       <TabsContent value="all">
         <div className="grid gap-4">
           {blogs.map((blog, index) => (
-            <div key={blog.id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
+            <div key={blog._id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
               <BlogCard blog={blog} onDelete={handleDelete} />
             </div>
           ))}
@@ -152,7 +154,7 @@ export function BlogList() {
         <div className="grid gap-4">
           {publishedBlogs.length > 0 ? (
             publishedBlogs.map((blog, index) => (
-              <div key={blog.id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
+              <div key={blog._id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
                 <BlogCard blog={blog} onDelete={handleDelete} />
               </div>
             ))
@@ -166,7 +168,7 @@ export function BlogList() {
         <div className="grid gap-4">
           {draftBlogs.length > 0 ? (
             draftBlogs.map((blog, index) => (
-              <div key={blog.id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
+              <div key={blog._id} className={`animate-slide-up stagger-${(index % 3) + 1}`}>
                 <BlogCard blog={blog} onDelete={handleDelete} />
               </div>
             ))
@@ -179,7 +181,7 @@ export function BlogList() {
   )
 }
 
-function BlogCard({ blog, onDelete }: { blog: Blog; onDelete: (id: string) => void }) {
+function BlogCard({ blog, onDelete }: { blog: Blog; onDelete: (id: string | undefined) => void }) {
   return (
     <Card className="border-purple-800/20 transition-all duration-300 hover:shadow-md hover:border-purple-600/30">
       <CardHeader>

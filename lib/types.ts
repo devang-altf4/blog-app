@@ -1,15 +1,16 @@
 export interface Blog {
-  id?: string 
+  _id?: string 
   title: string
   content: string
   tags: string[]
   published: boolean
   createdAt: string
   updatedAt: string
+  status: string
 }
 
 export interface BlogInput {
-  id?: string
+  _id?: string
   title: string
   content: string
   tags: string[]
